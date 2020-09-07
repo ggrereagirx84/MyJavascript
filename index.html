@@ -1,1 +1,39 @@
-test
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="uft-8">
+  <title>課題③</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <h1>ToDoリスト</h1>
+  <fieldset>
+    <label><input type="radio" name="status" checked>すべて</label>
+    <label><input type="radio" name="status">作業中</label>
+    <label><input type="radio" name="status">完了</label>
+  </fieldset>
+
+  <table>
+    <thead>
+      <tr>
+        <th class="task-id">ID</th>
+        <th class="task-comment">コメント</th>
+        <th class="task-status">状態</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>新規タスクの追加</h2>
+  
+  <div>
+    <form><input type="text" id="form"><input type="button" id="add" value="追加"></form>
+  </div>
+  
+  <script src="js/main.js"></script>
+</body>
+</html>
