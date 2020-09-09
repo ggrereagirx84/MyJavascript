@@ -3,33 +3,44 @@
 {
   const tbody = document.querySelector('tbody');
   const button = document.getElementById('add');
-  const status = ['作業中', '削除'];
+  const tasks = [];
 
   function addList(tasks) {
-    const tr = document.createElement('tr');
-    for (let i in tasks) {
-      const td = document.createElement('td');
-      td.textContent = tasks[i];
-      tr.appendChild(td);
+    for (let task of tasks) {
+      const tr = document.createElement('tr');
+      createContent(tr, tasks.indexOf(task))
+      createContent(tr, task.content);
+      createStatus(tr, task.status);
+      createStatus(tr, '削除');
+      tbody.appendChild(tr);
     }
+  }
 
-    for (let i in status) {
-      const input = document.createElement('input');
-      const td = document.createElement('td');
-      input.type = 'button';
-      input.value = status[i];
-      td.appendChild(input);
-      tr.appendChild(td);
-    }
+  function createContent(tr, text) {
+    const td = document.createElement('td');
+    td.textContent = text;
+    tr.appendChild(td);
+  }
 
-    tbody.appendChild(tr);
+  function createStatus(tr, text) {
+    const input = document.createElement('input');
+    input.type = 'button';
+    input.value = text;
+    const td = document.createElement('td');
+    td.appendChild(input);
+    tr.appendChild(td);
   }
 
   button.addEventListener('click',() => {
-    const taskName = document.getElementById('form').value;
-    const taskId = tbody.childElementCount;
-    const tasks = [taskId, taskName];
-    addList(tasks);
-    document.getElementById('form').value = '';
+    if (document.getElementById('form').value !== '') {
+      while (tbody.firstChild) {
+        tbody.removeChild(tbody.firstChild);
+      }
+      const newContent = document.getElementById('form').value;
+      const newStatus = '作業中';
+      tasks.push({content: newContent, status: newStatus});
+      addList(tasks);
+      document.getElementById('form').value = '';
+    }
   });
 }
