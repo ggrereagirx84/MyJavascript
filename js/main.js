@@ -48,9 +48,17 @@
   });
 
   window.addEventListener('click', e => {
-    if (e.srcElement.classList.contains('del')) {
-      const delIndex = e.srcElement.dataset.index;
+    if (e.target.classList.contains('del')) {
+      const delIndex = e.target.dataset.index;
       tasks.splice(delIndex, 1);
+      addList(tasks);
+    } else if (e.target.classList.contains('sta')) {
+      const staIndex = e.target.dataset.index;
+      if (tasks[staIndex].status === '作業中') {
+        tasks[staIndex].status = '完了';
+      } else {
+        tasks[staIndex].status = '作業中';
+      }
       addList(tasks);
     }
   });
