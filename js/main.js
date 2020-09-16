@@ -37,6 +37,36 @@
     tr.appendChild(td);
   }
 
+  function showTask() {
+    const radio = document.getElementsByName('status');
+    for (let i = 0; i < radio.length; i++) {
+      if (radio[i].checked && radio[i].value === 'all') {
+        const trs = document.querySelectorAll('tr');
+        for (let tr of trs) {
+          if (tr.classList === 'hidden') {
+            tr.classList.remove('hedden');
+          }
+        }
+      } else if(radio[i].checked && radio[i].value === 'working') {
+        setHidden('完了','作業中');
+      } else if(radio[i].checked && radio[i].value === 'done') {
+        setHidden('作業中','完了');
+      }
+    }
+  }
+
+  function setHidden(add, remove) {
+    const inputs = document.querySelectorAll('input');
+    for (let input of inputs) {
+      if (input.value === add && input.parentNode.parentNode.classList.contains('hidden') === false) {
+        input.parentNode.parentNode.classList.add('hidden');
+      } else if (input.value === remove && input.parentNode.parentNode.classList.contains('hidden') === true) {
+        input.parentNode.parentNode.remove('hidden');
+      }
+    }
+  }
+
+  
   button.addEventListener('click',() => {
     if (document.getElementById('form').value !== '') {
       const newContent = document.getElementById('form').value;
@@ -44,6 +74,7 @@
       tasks.push({content: newContent, status: newStatus});
       addList(tasks);
       document.getElementById('form').value = '';
+      showTask();
     }
   });
 
@@ -60,6 +91,10 @@
         tasks[staIndex].status = '作業中';
       }
       addList(tasks);
+      showTask();
+    } else if (e.target.classList.contains('status')) {
+      addList(tasks);
+      showTask();
     }
   });
 
