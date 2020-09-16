@@ -83,6 +83,7 @@
       const delIndex = e.target.dataset.index;
       tasks.splice(delIndex, 1);
       addList(tasks);
+      showTask();
     } else if (e.target.classList.contains('sta')) {
       const staIndex = e.target.dataset.index;
       if (tasks[staIndex].status === '作業中') {
