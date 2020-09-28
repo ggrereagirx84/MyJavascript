@@ -1,102 +1,158 @@
 'use strict'
 
 {
-  const tbody = document.querySelector('tbody');
-  const button = document.getElementById('add');
-  const tasks = [];
+  const header = document.getElementById('header');
+  const questionType = document.getElementById('questionType');
+  const content = document.getElementById('content');
+  const fieldset = document.querySelector('fieldset');
 
-  function addList(tasks) {
-    while (tbody.firstChild) {
-      tbody.removeChild(tbody.firstChild);
-    }
-    for (let task of tasks) {
-      const tr = document.createElement('tr');
-      const id = tasks.indexOf(task);
-      createContent(tr, id);
-      createContent(tr, task.content);
-      createStatus(tr, task.status, 'sta', id);
-      createStatus(tr, '削除', 'del', id);
-      tbody.appendChild(tr);
-    }
-  }
-
-  function createContent(tr, text) {
-    const td = document.createElement('td');
-    td.textContent = text;
-    tr.appendChild(td);
-  }
-
-  function createStatus(tr, text, cls, id) {
-    const input = document.createElement('input');
-    input.type = 'button';
-    input.value = text;
-    input.classList.add(cls);
-    input.dataset.index = id;
-    const td = document.createElement('td');
-    td.appendChild(input);
-    tr.appendChild(td);
-  }
-
-  function showTask() {
-    const radio = document.getElementsByName('status');
-    for (let i = 0; i < radio.length; i++) {
-      if (radio[i].checked && radio[i].value === 'all') {
-        const trs = document.querySelectorAll('tr');
-        for (let tr of trs) {
-          if (tr.classList === 'hidden') {
-            tr.classList.remove('hedden');
-          }
+  class Answer {
+    constructor(question) {
+      this.quiz = question.quiz;
+      this.question = question;
+      this.data = question.data;
+      this.el = document.createElement('input');
+      this.el.type = 'button';
+      this.el.addEventListener('click', () => {
+        if (this.el.value === 'ホームに戻る') {
+          this.question.clearButton();
+          this.quiz.setHome();
+          const start = ['開始'];
+          this.question.createButtons(start);
+        } else if (this.el.value !== '開始') {
+          this.check();
         }
-      } else if(radio[i].checked && radio[i].value === 'working') {
-        setHidden('完了','作業中');
-      } else if(radio[i].checked && radio[i].value === 'done') {
-        setHidden('作業中','完了');
-      }
+      });
     }
-  }
 
-  function setHidden(add, remove) {
-    const inputs = document.querySelectorAll('input');
-    for (let input of inputs) {
-      if (input.value === add && input.parentNode.parentNode.classList.contains('hidden') === false) {
-        input.parentNode.parentNode.classList.add('hidden');
-      } else if (input.value === remove && input.parentNode.parentNode.classList.contains('hidden') === true) {
-        input.parentNode.parentNode.remove('hidden');
-      }
+    setButtonText(text) {
+      this.el.value = text;
     }
-  }
 
-  
-  button.addEventListener('click',() => {
-    if (document.getElementById('form').value !== '') {
-      const newContent = document.getElementById('form').value;
-      const newStatus = '作業中';
-      tasks.push({content: newContent, status: newStatus});
-      addList(tasks);
-      document.getElementById('form').value = '';
-      showTask();
+    getEl() {
+      return this.el;
     }
-  });
 
-  window.addEventListener('click', e => {
-    if (e.target.classList.contains('del')) {
-      const delIndex = e.target.dataset.index;
-      tasks.splice(delIndex, 1);
-      addList(tasks);
-      showTask();
-    } else if (e.target.classList.contains('sta')) {
-      const staIndex = e.target.dataset.index;
-      if (tasks[staIndex].status === '作業中') {
-        tasks[staIndex].status = '完了';
+    check() {
+      if (this.quiz.getQuizCount() < this.data.length - 1) {
+        this.quiz.addQuizCount();
+        if (this.el.value === this.question.correctAnswer) {
+          this.quiz.addCorrentNum();
+        }
+        this.question.progress();
       } else {
-        tasks[staIndex].status = '作業中';
+        this.question.endQuiz();
       }
-      addList(tasks);
-      showTask();
-    } else if (e.target.classList.contains('status')) {
-      addList(tasks);
-      showTask();
+    }
+  }
+
+  class Question {
+    constructor(data, quiz) {
+      this.data = data;
+      this.quiz = quiz;
+      this.buttons = undefined;
+      this.correctAnswer = undefined;
+      this.incorrectAnswers = undefined;
+      this.answer = undefined;
+      this.progress();
+    }
+    progress() {
+      this.clearButton();
+      header.textContent = `問題${this.quiz.getQuizCount() + 1}`;
+      questionType.innerText = `[ジャンル]${this.data[this.quiz.getQuizCount()].category} \n[難易度]${this.data[this.quiz.getQuizCount()].difficulty}`;
+      content.textContent = this.data[this.quiz.getQuizCount()].question;
+      this.correctAnswer = this.data[this.quiz.getQuizCount()].correct_answer;
+      this.incorrectAnswers = this.data[this.quiz.getQuizCount()].incorrect_answers;
+      this.answers = [this.correctAnswer,...this.incorrectAnswers];
+      this.createButtons(this.answers);
+    }
+
+    createButtons(contents) {
+      this.buttons = [];
+      contents.forEach(content => {
+        this.buttons.push(new Answer(this));
+      });
+      let nums = [];
+      for (let i = 0; i < this.buttons.length; i++) {
+        nums.push(i);
+      }
+      
+      this.buttons.forEach(button => {
+        const text = contents.splice(Math.floor(Math.random() * this.answers.length), 1)[0];
+        button.setButtonText(text);
+        fieldset.appendChild(button.getEl());
+      });
+    }
+
+    clearButton() {
+      while (fieldset.firstChild) {
+        fieldset.removeChild(fieldset.firstChild);
+      }
+    }
+
+    endQuiz() {
+      header.textContent = `あなたの正解数は${this.quiz.getCorrectNum()}です！！`;
+      questionType.innerText = '';
+      content.textContent = '再チャレンジしたい場合は以下をクリック！！';
+      this.clearButton();
+      const home = ['ホームに戻る']
+      this.createButtons(home);
+    }
+
+  }
+
+  class Quiz {
+    constructor() {
+      this.fetchAPI();
+      this.correctNum = 0;
+      this.quizCount = 0;
+    }
+    fetchAPI() {
+      header.textContent = '取得中';
+      questionType.innerText = '';
+      content.textContent = '少々お待ちください。';
+      const startButton = document.querySelector('input');
+      fieldset.removeChild(startButton);
+      fetch("https://opentdb.com/api.php?amount=10")
+        .then(response => {
+          return response.json();
+        })
+        .then(data => {
+          new Question(data.results, this);
+        })
+        .catch(error => {
+          console.log("失敗しました");
+        });
+    }
+
+    setHome() {
+      this.correctNum = 0;
+      this.quizCount = 0;
+      header.textContent = 'ようこそ';
+      questionType.innerText = '';
+      content.textContent = '以下のボタンをクリック';
+    }
+
+    addQuizCount() {
+      this.quizCount++;
+    }
+
+    getQuizCount() {
+      return this.quizCount;
+    }
+
+    addCorrentNum() {
+      this.correctNum++;
+    }
+
+    getCorrectNum() {
+      return this.correctNum;
+    }
+  }
+
+  window.addEventListener('click',e => {
+    if (e.target.value === '開始') {
+      new Quiz();
     }
   });
-
 }

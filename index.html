@@ -2,35 +2,20 @@
 <html lang="ja">
 <head>
   <meta charset="uft-8">
-  <title>課題③-4</title>
+  <title>課題④</title>
   <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
-  <h1>ToDoリスト</h1>
-  <fieldset>
-    <label><input type="radio" name="status" class="status" value="all" checked>すべて</label>
-    <label><input type="radio" name="status" class="status" value="working">作業中</label>
-    <label><input type="radio" name="status" class="status" value="done">完了</label>
-  </fieldset>
-
-  <table>
-    <thead>
-      <tr>
-        <th class="task-id">ID</th>
-        <th class="task-comment">コメント</th>
-        <th class="task-status">状態</th>
-        <th></th>
-      </tr>
-    </thead>
-    <tbody>
-    </tbody>
-  </table>
-
-  <h2>新規タスクの追加</h2>
-  
+  <h1 id="header">ようこそ</h1>
+  <h2 id="questionType"></h2>
+  <p id="content">以下のボタンをクリック</p>
   <div>
-    <form><input type="text" id="form"><input type="button" id="add" value="追加"></form>
+    <fieldset id="answer">
+      <input type="button" value="開始">
+    </fieldset>
   </div>
+
+  
   
   <script src="js/main.js"></script>
 </body>
