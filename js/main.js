@@ -50,10 +50,6 @@
     constructor(data, quiz) {
       this.data = data;
       this.quiz = quiz;
-      this.buttons = undefined;
-      this.correctAnswer = undefined;
-      this.incorrectAnswers = undefined;
-      this.answer = undefined;
       this.progress();
     }
     progress() {
@@ -69,14 +65,10 @@
 
     createButtons(contents) {
       this.buttons = [];
-      contents.forEach(content => {
+      for (let i = 0; i < contents.length; i++) {
         this.buttons.push(new Answer(this));
-      });
-      let nums = [];
-      for (let i = 0; i < this.buttons.length; i++) {
-        nums.push(i);
       }
-      
+ 
       this.buttons.forEach(button => {
         const text = contents.splice(Math.floor(Math.random() * this.answers.length), 1)[0];
         button.setButtonText(text);
