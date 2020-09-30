@@ -95,26 +95,23 @@
 
   class Quiz {
     constructor() {
-      this.fetchAPI();
+      this.fetchAPI().then();
       this.correctNum = 0;
       this.quizCount = 0;
     }
-    fetchAPI() {
+    async fetchAPI() {
       header.textContent = '取得中';
       questionType.innerText = '';
       content.textContent = '少々お待ちください。';
       const startButton = document.querySelector('input');
       fieldset.removeChild(startButton);
-      fetch("https://opentdb.com/api.php?amount=10")
-        .then(response => {
-          return response.json();
-        })
-        .then(data => {
-          new Question(data.results, this);
-        })
-        .catch(error => {
-          console.log("失敗しました");
-        });
+      try {
+        let response = await fetch("https://opentdb.com/api.php?amount=10");
+        let body = await response.json();
+        return new Question(body.results, this);
+      } catch {
+        console.log("失敗しました");
+      }
     }
 
     setHome() {
